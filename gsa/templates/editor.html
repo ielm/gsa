@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CNSA</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js" integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl" crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <!-- CoreNLP -->
+    <link rel="stylesheet" type="text/css" href="corenlp-brat.css"/>
+    <script type="text/javascript" src="corenlp-brat.js"></script>
+
+    <style>
+        #header-row {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .hierarchy-card {
+            margin-bottom: 20px;
+        }
+        .definition {
+            font-style: italic;
+        }
+        .local {
+            color: black;
+        }
+        .inherit {
+            color: grey;
+        }
+        .blocked {
+            color: red;
+            text-decoration: line-through;
+        }
+        .override {
+            color: grey;
+            text-decoration: line-through;
+        }
+
+        .filler {}
+
+        .from-field {
+            font-size: xx-small;
+            color: grey;
+        }
+        .recent {
+            font-size: small;
+        }
+        .name {
+            font-size: larger;
+        }
+        .inline-edit-button {
+            padding: 0rem 0.15rem;
+            font-size: 0.65rem;
+            line-height: 1.5;
+            width: 18px;
+        }
+
+        #definition-readonly {
+            display: block;
+        }
+
+        #definition-readwrite {
+            display: none;
+        }
+
+        #insert-property .form-control-sm {
+            margin-right: 5px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(".Radio-menu").on("change", "input[type='Radio']", function() {
+           $(this).closest("li").toggleClass("active", this.checked);
+        });
+
+        $(document).on('click', '.allow-focus', function (e) {
+          e.stopPropagation();
+        });
+    </script>
+
+    
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-sm bg-light navbar-light fixed-top">
+    <ul class="navbar-nav">
+        <li id="nav-brand" class="nav-item">
+            <a class="navbar-brand" href="#">GATOR Semantic Annotator</a>
+        </li>
+    </ul>
+</nav>
+
+
+<div style="margin-top: 75px;"></div>
+
+<div class="container">
+    <div id="header-row" class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-info" type="button" id="search-button">Go</button>
+                        </div>
+                        <input id="text" type="text" class="form-control" placeholder="e.g. The quick brown fox jumps over the lazy dog." aria-label="Annotate a sentence" aria-describedby="search-button">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card hierarchy-card">
+                <div class="card-header">
+                    Annotator
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                          <input class="form-check-input" type="radio" name="annotatorRadio" id="annotatorRadio1" value="option1" checked>
+                          <label class="form-check-label" for="annotatorRadio1">
+                            ConceptNet
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="radio" name="annotatorRadio" id="annotatorRadio2" value="option2">
+                          <label class="form-check-label" for="annotatorRadio2">
+                            CoreNLP
+                          </label>
+                    </div>
+                </div>
+            </div>
+            <div class="card hierarchy-card">
+                <div class="card-header">
+                    CoreNLP Annotators
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox1" value="pos" checked disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox1">
+                            parts of speech
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox2" value="lemma" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox2">
+                            lemmas
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox3" value="ner" checked disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox3">
+                            named entities
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox4" value="regexner" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox4">
+                            named entities (regexner)
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox5" value="parse" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox5">
+                            constituency parse
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox6" value="depparse" checked disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox6">
+                            dependency parse
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox7" value="openie" checked disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox7">
+                            openie
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox8" value="coref" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox8">
+                            coreference
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox9" value="kbp" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox9">
+                            relations
+                          </label>
+                    </div>
+                    <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="cnlpaCheckbox" id="cnlpaCheckbox10" value="sentiment" disabled>
+                          <label class="form-check-label" for="cnlpaCheckbox10">
+                            sentiment
+                          </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    Annotation
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 10px;">
+                        
+                    </div>
+                    <table class="table table-sm table-striped table-borderless">
+                       
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
